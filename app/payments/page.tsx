@@ -7,7 +7,7 @@ export default async function DemoPage() {
   });
 
   const parsedRes = await res.json();
-  console.log("🚀 ~ parsedRes:", parsedRes.data.data);
+  // console.log("🚀 ~ parsedRes:", parsedRes.data.data);
 
   return (
     <div className="container mx-auto py-10">
