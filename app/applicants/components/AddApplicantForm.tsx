@@ -33,13 +33,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
-  ApplicantRoleAndStatusType,
   useCreateNewApplicantMutation,
   useGetApplicantsRoleQuery,
 } from "@/state/applicant";
 import { useToast } from "@/hooks/use-toast";
-import LoadingSpinner from "@/components/LoadingSpinner";
+
 import { createApplicantSchema } from "@/validations/createApplicantSchema";
+import { ApplicantRoleAndStatusType } from "@/types";
 
 const AddApplicantForm = () => {
   const { toast } = useToast();
@@ -84,21 +84,21 @@ const AddApplicantForm = () => {
   };
 
   useEffect(() => {
-    if (errorCreateApplicant?.data?.error?.duplicateFields) {
-      errorCreateApplicant?.data?.error?.duplicateFields.map(
-        (duplicateField: string) => {
-          if (duplicateField) {
+    if (errorCreateApplicant?.data?.error) {
+      if (errorCreateApplicant?.data?.error?.duplicateFields) {
+        errorCreateApplicant?.data?.error?.duplicateFields.map(
+          (duplicateField: string) => {
             const field = duplicateField as "email" | "phoneNumber";
-            form.setError(field, { message: `${field} is already registered` });
+            form.setError(field, {
+              message: `${field} is already registered`,
+            });
           }
-        }
-      );
+        );
+      } else {
+        toast({ description: "An error occured." });
+      }
     }
-  }, [errorCreateApplicant, form]);
-
-  if (isLoadingCreateApplicant) {
-    return <LoadingSpinner />;
-  }
+  }, [errorCreateApplicant, form, toast]);
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -271,7 +271,9 @@ const AddApplicantForm = () => {
             </div>
 
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={isLoadingCreateApplicant}>
+                Submit
+              </Button>
             </DialogFooter>
           </form>
         </Form>
