@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/app/redux";
 import {
   ApplicantRoleAndStatusType,
+  ApplicantsType,
   setSelectedApplicant,
 } from "@/state/applicant";
 
@@ -64,8 +65,7 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const handleRowClick = (applicantDetails: any) => {
-    // console.log("applicantDetails ", applicantDetails);
+  const handleRowClick = (applicantDetails: ApplicantsType) => {
     dispatch(setSelectedApplicant(applicantDetails));
   };
 
@@ -192,7 +192,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => handleRowClick(row.original)}
+                  onClick={() => handleRowClick(row.original as ApplicantsType)}
                   className="hover:bg-green-200"
                 >
                   {row.getVisibleCells().map((cell) => (

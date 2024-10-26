@@ -1,17 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { columns } from "./components/columns";
 import { DataTable } from "./components/data-table";
 import { useAppSelector } from "@/app/redux";
-// import { NEXT_PUBLIC_API_BASE_URL } from "../constants/api";
 import ApplicantDetailsCard from "./components/ApplicantDetailsCard";
 import {
-  ApplicantRoleAndStatusType,
   useGetApplicantsQuery,
   useGetApplicantsRoleQuery,
   useGetApplicantsStatusQuery,
 } from "@/state/applicant";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function DemoPage() {
   const selectedApplicant = useAppSelector(
@@ -36,10 +34,17 @@ export default function DemoPage() {
     isLoading: isLoadingApplicantsRole,
   } = useGetApplicantsRoleQuery({});
 
+  if (
+    isLoadingApplicants ||
+    isLoadingApplicantsStatus ||
+    isLoadingApplicantsRole
+  ) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <div className="container mx-auto py-10 grid grid-cols-3 gap-4">
       <div className="col-span-2 shadow-lg p-4 min-h-screen">
-        {/* <DataTableWithData /> */}
         {applicants && applicantsStatus && applicantsRole && (
           <DataTable
             columns={columns}
