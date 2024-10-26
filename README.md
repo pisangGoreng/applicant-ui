@@ -52,14 +52,6 @@ The application will be running on http://localhost:3000.
 
 ## Usage/Examples
 
-```javascript
-import Component from "my-project";
-
-function App() {
-  return <Component />;
-}
-```
-
 1. Home Page:
    Displays a list of applicants with options for:
 
