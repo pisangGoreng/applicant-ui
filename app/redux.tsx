@@ -6,7 +6,6 @@ import {
   useSelector,
   Provider,
 } from "react-redux";
-import globalReducer from "@/state";
 import applicantReducer, { applicantsApi } from "@/state/applicant";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import {
@@ -48,7 +47,7 @@ const persistConfig = {
   whitelist: ["global"],
 };
 const rootReducer = combineReducers({
-  global: globalReducer,
+  // global: globalReducer,
   applicant: applicantReducer,
   [applicantsApi.reducerPath]: applicantsApi.reducer,
 });

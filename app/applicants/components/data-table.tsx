@@ -30,11 +30,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch } from "@/app/redux";
-import {
-  ApplicantRoleAndStatusType,
-  ApplicantsType,
-  setSelectedApplicant,
-} from "@/state/applicant";
+import { setSelectedApplicant } from "@/state/applicant";
+import { ApplicantRoleAndStatusType, ApplicantsType } from "@/types";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

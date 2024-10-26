@@ -37,37 +37,16 @@ import {
   useCreateNewApplicantMutation,
   useGetApplicantsRoleQuery,
 } from "@/state/applicant";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-
-const formSchema = z.object({
-  name: z.string().min(4),
-  email: z.string().email(),
-  yoe: z
-    .string()
-    .regex(/^\d+$/, { message: "Years of experience must be greater than 1." }),
-  phoneNumber: z.string().regex(/^(\+?\d{1,3}[-.\s]?)?(\d{10,15})$/, {
-    message: "Invalid phone number format",
-  }),
-  applicantRole: z
-    .string({ message: "Please select an applicant role." })
-    .nonempty("Please select an applicant role."),
-  location: z.string().min(4),
-  resumeLink: z.string().min(4),
-});
+import { useToast } from "@/hooks/use-toast";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { createApplicantSchema } from "@/validations/createApplicantSchema";
 
 const AddApplicantForm = () => {
+  const { toast } = useToast();
   const { data: applicantsRole } = useGetApplicantsRoleQuery({});
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof createApplicantSchema>>({
+    resolver: zodResolver(createApplicantSchema),
     defaultValues: {
-      // name: "endy",
-      // email: "7ofpentacles@gmail.com",
-      // yoe: "2",
-      // phoneNumber: "081310338777",
-      // applicantRole: "Frontend Engineer",
-      // location: "indo",
-      // resumeLink: "asdasdasdas",
-
       name: "",
       email: "",
       yoe: "",
@@ -78,16 +57,17 @@ const AddApplicantForm = () => {
     },
   });
 
-  const [createApplicant, { isLoading, isError, isSuccess, error }] =
-    useCreateNewApplicantMutation();
+  const [
+    createApplicant,
+    { isLoading: isLoadingCreateApplicant, error: errorCreateApplicant },
+  ] = useCreateNewApplicantMutation();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("Form Submitted", data);
+  const onSubmit = async (data: z.infer<typeof createApplicantSchema>) => {
     if (Array.isArray(applicantsRole)) {
       const { id: selectedApplicantRole } = applicantsRole.find(
-        (role) => role.description === data.applicantRole
+        ({ description }) => description === data.applicantRole
       );
-      console.log("🚀 ~ onSubmit ~ cb:", selectedApplicantRole);
 
       const response = await createApplicant({
         ...data,
@@ -95,31 +75,33 @@ const AddApplicantForm = () => {
         applicantRole: Number(selectedApplicantRole),
       }).unwrap();
 
-      console.log("🚀 ~ sucess ~ response:", response);
-
-      setOpen(false);
+      if (response.success) {
+        setIsDialogOpen(false);
+        toast({ description: "Success add new applicant." });
+        form.reset();
+      }
     }
-
-    form.reset();
   };
 
   useEffect(() => {
-    if (error?.data?.error?.duplicateFields) {
-      error?.data?.error?.duplicateFields.map((duplicateField: string) => {
-        if (duplicateField) {
-          const field = duplicateField as "email" | "phoneNumber";
-          form.setError(field, {
-            message: `${field} is already registered`,
-          });
+    if (errorCreateApplicant?.data?.error?.duplicateFields) {
+      errorCreateApplicant?.data?.error?.duplicateFields.map(
+        (duplicateField: string) => {
+          if (duplicateField) {
+            const field = duplicateField as "email" | "phoneNumber";
+            form.setError(field, { message: `${field} is already registered` });
+          }
         }
-      });
+      );
     }
-  }, [error, form]);
+  }, [errorCreateApplicant, form]);
 
-  const [open, setOpen] = useState(false);
+  if (isLoadingCreateApplicant) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button className="bg-white text-green-700 border-green-700 border hover:text-white">
           <Upload />

@@ -6,7 +6,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { ApplicantsType } from "@/state/applicant";
+import { ApplicantsType } from "@/types";
 import React from "react";
 
 type Props = {

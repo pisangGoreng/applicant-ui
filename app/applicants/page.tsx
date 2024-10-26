@@ -10,31 +10,21 @@ import {
   useGetApplicantsStatusQuery,
 } from "@/state/applicant";
 import LoadingSpinner from "@/components/LoadingSpinner";
-
 import AddApplicantForm from "./components/AddApplicantForm";
 
-export default function DemoPage() {
+export default function ApplicanstPages() {
   const selectedApplicant = useAppSelector(
     ({ applicant }) => applicant.selectedApplicant
   );
 
-  const {
-    data: applicants,
-    error: errorApplicants,
-    isLoading: isLoadingApplicants,
-  } = useGetApplicantsQuery({});
+  const { data: applicants, isLoading: isLoadingApplicants } =
+    useGetApplicantsQuery({});
 
-  const {
-    data: applicantsStatus,
-    error: errorApplicantsStatus,
-    isLoading: isLoadingApplicantsStatus,
-  } = useGetApplicantsStatusQuery({});
+  const { data: applicantsStatus, isLoading: isLoadingApplicantsStatus } =
+    useGetApplicantsStatusQuery({});
 
-  const {
-    data: applicantsRole,
-    error: errorApplicantsRole,
-    isLoading: isLoadingApplicantsRole,
-  } = useGetApplicantsRoleQuery({});
+  const { data: applicantsRole, isLoading: isLoadingApplicantsRole } =
+    useGetApplicantsRoleQuery({});
 
   if (
     isLoadingApplicants ||
