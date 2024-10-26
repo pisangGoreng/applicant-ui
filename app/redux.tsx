@@ -7,8 +7,8 @@ import {
   Provider,
 } from "react-redux";
 import globalReducer from "@/state";
-import applicantReducer from "@/state/applicant";
-import { api } from "@/state/api";
+import applicantReducer, { applicantsApi } from "@/state/applicant";
+// import { api } from "@/state/api";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
 import {
@@ -52,7 +52,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   global: globalReducer,
   applicant: applicantReducer,
-  [api.reducerPath]: api.reducer,
+  // [api.reducerPath]: api.reducer,
+  [applicantsApi.reducerPath]: applicantsApi.reducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -65,7 +66,9 @@ export const makeStore = () => {
         serializableCheck: {
           ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
-      }).concat(api.middleware),
+      })
+        // .concat(api.middleware)
+        .concat(applicantsApi.middleware),
   });
 };
 

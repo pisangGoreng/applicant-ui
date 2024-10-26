@@ -29,14 +29,17 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAppDispatch, useAppSelector } from "@/app/redux";
-import { setSelectedApplicant } from "@/state/applicant";
+import { useAppDispatch } from "@/app/redux";
+import {
+  ApplicantRoleAndStatusType,
+  setSelectedApplicant,
+} from "@/state/applicant";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  applicantStatus: any;
-  applicantRole: any;
+  applicantStatus: ApplicantRoleAndStatusType[];
+  applicantRole: ApplicantRoleAndStatusType[];
 }
 
 export function DataTable<TData, TValue>({
@@ -46,14 +49,8 @@ export function DataTable<TData, TValue>({
   applicantRole,
 }: DataTableProps<TData, TValue>) {
   const dispatch = useAppDispatch();
-  const selectedApplicant = useAppSelector(
-    ({ applicant }) => applicant.selectedApplicant
-  );
-
   const [sorting, setSorting] = useState<SortingState>([]);
-
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
   const table = useReactTable({
     data,
     columns,
@@ -67,78 +64,93 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const handleFiltering = (
-    value: string,
-    type: "applicantStatus" | "applicantRole"
-  ) => {
-    table.getColumn(type)?.setFilterValue(value === "All" ? "" : value);
+  const handleRowClick = (applicantDetails: any) => {
+    // console.log("applicantDetails ", applicantDetails);
+    dispatch(setSelectedApplicant(applicantDetails));
   };
 
-  const handleRowClick = (applicantDetails: any) => {
-    console.log("applicantDetails ", applicantDetails);
-    dispatch(setSelectedApplicant(applicantDetails));
+  const filteringColumn = (
+    value: string,
+    columnName: "applicantStatus" | "applicantRole"
+  ) => {
+    table.getColumn(columnName)?.setFilterValue(value === "All" ? "" : value);
+  };
+
+  const PaginationSection = () => {
+    return (
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    );
+  };
+
+  const FilteringSection = () => {
+    return (
+      <div className="flex flex-row gap-2">
+        <div>
+          <p className="mb-2">Job Role</p>
+          <Select
+            onValueChange={(val) => filteringColumn(val, "applicantRole")}
+          >
+            <SelectTrigger className="w-48 ring-0 focus:ring-0">
+              <SelectValue placeholder="Select Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"All"}>All</SelectItem>
+              {applicantRole.map(
+                ({ id, description }: ApplicantRoleAndStatusType) => (
+                  <SelectItem key={id} value={description}>
+                    {description}
+                  </SelectItem>
+                )
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <p className="mb-2">Status</p>
+          <Select
+            onValueChange={(val) => filteringColumn(val, "applicantStatus")}
+          >
+            <SelectTrigger className="w-48 ring-0 focus:ring-0">
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"All"}>All</SelectItem>
+              {applicantStatus.map(
+                ({ id, description }: ApplicantRoleAndStatusType) => (
+                  <SelectItem key={id} value={description}>
+                    {description}
+                  </SelectItem>
+                )
+              )}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div>
       <div className="flex flex-row justify-between items-center mb-2">
-        <div className="flex flex-row gap-2">
-          <div>
-            <p className="mb-2">Job Status</p>
-            <Select
-              onValueChange={(value) =>
-                handleFiltering(value, "applicantStatus")
-              }
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={"All"}>All</SelectItem>
-                {applicantRole.map(
-                  ({
-                    id,
-                    description,
-                  }: {
-                    id: string;
-                    description: string;
-                  }) => (
-                    <SelectItem key={id} value={description}>
-                      {description}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <p className="mb-2">Job Role</p>
-            <Select
-              onValueChange={(value) => handleFiltering(value, "applicantRole")}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={"All"}>All</SelectItem>
-                {applicantStatus.map(
-                  ({
-                    id,
-                    description,
-                  }: {
-                    id: string;
-                    description: string;
-                  }) => (
-                    <SelectItem key={id} value={description}>
-                      {description}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <FilteringSection />
       </div>
 
       <div className="rounded-md border min-h-fit">
@@ -152,24 +164,7 @@ export function DataTable<TData, TValue>({
             className="max-w-sm focus-visible:ring-offset-0 focus-visible:ring-0"
           />
 
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+          <PaginationSection />
         </div>
 
         <Table>
@@ -198,6 +193,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => handleRowClick(row.original)}
+                  className="hover:bg-green-200"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
