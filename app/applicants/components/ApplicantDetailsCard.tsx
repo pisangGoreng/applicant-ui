@@ -6,11 +6,14 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { ApplicantsType } from "@/state/applicant";
 import React from "react";
 
-// type Props = {};
+type Props = {
+  details: ApplicantsType;
+};
 
-const ApplicantDetailsCard = ({ details }) => {
+const ApplicantDetailsCard = ({ details }: Props) => {
   return (
     <Card>
       <CardHeader>
@@ -22,7 +25,7 @@ const ApplicantDetailsCard = ({ details }) => {
           <p>Email: </p>
           <Button
             onClick={() => {}}
-            className=" text-blue-400 font-extrabold bg-transparent outline-none hover:bg-transparent bg-red-300 h-0 p-0"
+            className=" text-blue-400 font-extrabold bg-transparent outline-none hover:bg-transparent h-0 p-0"
           >
             {details.email}
           </Button>
@@ -47,7 +50,7 @@ const ApplicantDetailsCard = ({ details }) => {
           <p>Resume: </p>
           <Button
             onClick={() => {}}
-            className=" text-blue-400 font-extrabold bg-transparent outline-none hover:bg-transparent bg-red-300 h-0 p-0"
+            className=" text-blue-400 font-extrabold bg-transparent outline-none hover:bg-transparent  h-0 p-0"
           >
             Resume Link
           </Button>

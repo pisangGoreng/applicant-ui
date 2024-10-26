@@ -69,6 +69,16 @@ export const applicantsApi = createApi({
         response: ApiResponseType<ApplicantRoleAndStatusType>
       ) => response.data,
     }),
+
+    createNewApplicant: builder.mutation({
+      query: (newApplicant) => ({
+        url: "/applicants",
+        method: "POST",
+        body: newApplicant,
+        headers: { "Content-Type": "application/json" },
+      }),
+      invalidatesTags: ["Applicants"], // Invalidate cache to refetch data
+    }),
   }),
 });
 
@@ -95,5 +105,7 @@ export const {
   useGetApplicantsQuery,
   useGetApplicantsStatusQuery,
   useGetApplicantsRoleQuery,
+
+  useCreateNewApplicantMutation,
 } = applicantsApi;
 export default applicantSlice.reducer;

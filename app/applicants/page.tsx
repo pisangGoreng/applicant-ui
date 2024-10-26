@@ -11,6 +11,8 @@ import {
 } from "@/state/applicant";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
+import AddApplicantForm from "./components/AddApplicantForm";
+
 export default function DemoPage() {
   const selectedApplicant = useAppSelector(
     ({ applicant }) => applicant.selectedApplicant
@@ -43,28 +45,38 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="container mx-auto py-10 grid grid-cols-3 gap-4">
-      <div className="col-span-2 shadow-lg p-4 min-h-screen">
-        {applicants && applicantsStatus && applicantsRole && (
-          <DataTable
-            columns={columns}
-            data={applicants}
-            applicantStatus={
-              Array.isArray(applicantsStatus) ? applicantsStatus : []
-            }
-            applicantRole={Array.isArray(applicantsRole) ? applicantsRole : []}
-          />
-        )}
+    <div className="container mx-auto ">
+      <div className="py-3 flex flex-row justify-between items-center px-4">
+        <h1>Applicants</h1>
+
+        <AddApplicantForm />
       </div>
 
-      <div className="shadow-lg p-4">
-        {selectedApplicant ? (
-          <ApplicantDetailsCard details={selectedApplicant} />
-        ) : (
-          <div className="flex min-h-screen items-center justify-center ">
-            <p>No Applicant Selected</p>
-          </div>
-        )}
+      <div className="py-3 grid grid-cols-3 gap-4 ">
+        <div className="col-span-2 shadow-lg p-4 min-h-screen">
+          {applicants && applicantsStatus && applicantsRole && (
+            <DataTable
+              columns={columns}
+              data={applicants}
+              applicantStatus={
+                Array.isArray(applicantsStatus) ? applicantsStatus : []
+              }
+              applicantRole={
+                Array.isArray(applicantsRole) ? applicantsRole : []
+              }
+            />
+          )}
+        </div>
+
+        <div className="shadow-lg p-4">
+          {selectedApplicant ? (
+            <ApplicantDetailsCard details={selectedApplicant} />
+          ) : (
+            <div className="flex min-h-screen items-center justify-center ">
+              <p>No Applicant Selected</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
